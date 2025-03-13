@@ -3,82 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Treehouse Wallpaper</title>
+    <title>Discord Bot Hub</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e2e;
+            color: white;
+            text-align: center;
             margin: 0;
-            overflow: hidden;
-            background: url('treehouse.jpg') no-repeat center center/cover;
+            padding: 0;
         }
-        .overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.2);
+        .container {
+            width: 80%;
+            margin: auto;
+            padding-top: 20px;
         }
-        .leaves {
-            position: absolute;
-            width: 100%; height: 100%;
-            pointer-events: none;
+        header {
+            background: #5865F2;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
         }
-        .leaf {
-            position: absolute;
-            width: 20px; height: 20px;
-            background: url('leaf.png') no-repeat center/contain;
-            opacity: 0.8;
-            animation: fall linear infinite;
+        .fancy-button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            padding: 15px 30px;
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+        .fancy-button:hover {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
         }
-        #toggle-sound {
-            position: absolute;
-            top: 20px; right: 20px;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.5);
+        .bot-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .bot-card {
+            background: #2b2d42;
+            padding: 20px;
+            border-radius: 10px;
+            width: 30%;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        }
+        .download-btn {
+            background: #7289DA;
             color: white;
             border: none;
+            padding: 10px 20px;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .download-btn:hover {
+            background: #5865F2;
+        }
+        .hidden {
+            display: none;
+        }
+        .blacklist-warning {
+            background: red;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <audio id="bg-music" loop>
-        <source src="wind-chimes.mp3" type="audio/mp3">
-    </audio>
-    <div id="background">
-        <div class="overlay"></div>
-        <div class="leaves"></div>
+    <div class="container">
+        <header>
+            <h1>Welcome to Discord Bot Hub</h1>
+            <button id="loginBtn" class="fancy-button">Login with Discord</button>
+        </header>
+        <section id="bots">
+            <h2>Available Bots</h2>
+            <div class="bot-list">
+                <div class="bot-card">
+                    <h3>Moderation Bot</h3>
+                    <p>A bot to manage your server with advanced moderation tools.</p>
+                    <button class="download-btn">Download Source</button>
+                </div>
+                <div class="bot-card">
+                    <h3>Fun Bot</h3>
+                    <p>Add fun games and commands to entertain your server members.</p>
+                    <button class="download-btn">Download Source</button>
+                </div>
+                <div class="bot-card">
+                    <h3>Music Bot</h3>
+                    <p>Enjoy high-quality music streaming with easy-to-use commands.</p>
+                    <button class="download-btn">Download Source</button>
+                </div>
+            </div>
+        </section>
+        <div id="notification" class="hidden">Welcome! You've successfully logged in.</div>
+        <div id="blacklist-warning" class="blacklist-warning">⚠️ You are blacklisted! Contact support for more info.</div>
     </div>
-    <button id="toggle-sound">Play Music</button>
+    
     <script>
-        const music = document.getElementById("bg-music");
-        const button = document.getElementById("toggle-sound");
-        let playing = false;
-        button.addEventListener("click", () => {
-            playing = !playing;
-            if (playing) {
-                music.play();
-                button.textContent = "Pause Music";
-            } else {
-                music.pause();
-                button.textContent = "Play Music";
-            }
-        });
+        const webhookURL = 'YOUR_DISCORD_WEBHOOK_URL';
+        const blacklistedUsers = ["blacklistedUserID1", "blacklistedUserID2"];
+        const blacklistedIPs = ["123.456.789.000", "111.222.333.444"];
 
-        function createLeaves() {
-            const leavesContainer = document.querySelector(".leaves");
-            for (let i = 0; i < 15; i++) {
-                const leaf = document.createElement("div");
-                leaf.classList.add("leaf");
-                leaf.style.left = Math.random() * 100 + "vw";
-                leaf.style.animationDuration = (5 + Math.random() * 5) + "s";
-                leavesContainer.appendChild(leaf);
-            }
+        function getIPAddress() {
+            return fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => data.ip);
         }
-        createLeaves();
+
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            const userID = "exampleUserID";  // Replace with actual Discord API data
+            const username = "exampleUsername"; // Replace with actual username
+            const userIP = await getIPAddress();
+
+            if (blacklistedUsers.includes(userID) || blacklistedIPs.includes(userIP)) {
+                document.getElementById('blacklist-warning').style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = 'blacklisted.html';
+                }, 3000);
+                return;
+            }
+
+            const embed = {
+                "embeds": [{
+                    "title": "New User Logged In",
+                    "color": 16711680,
+                    "fields": [
+                        { "name": "Username", "value": username, "inline": true },
+                        { "name": "User ID", "value": userID, "inline": true },
+                        { "name": "IP Address", "value": userIP, "inline": true }
+                    ],
+                    "footer": { "text": "Security System" },
+                    "timestamp": new Date()
+                }]
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(embed)
+            });
+
+            document.getElementById('notification').classList.remove('hidden');
+        });
     </script>
 </body>
 </html>
