@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Wallpaper</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: url('nature-background.jpg') no-repeat center center/cover;
+        }
+        .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .fireflies {
+            position: absolute;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        .firefly {
+            position: absolute;
+            width: 6px; height: 6px;
+            background: yellow;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: flicker 2s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        #toggle-sound {
+            position: absolute;
+            top: 20px; right: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-music" loop>
+        <source src="nature-sounds.mp3" type="audio/mp3">
+    </audio>
+    <div id="background">
+        <div class="overlay"></div>
+        <div class="fireflies"></div>
+    </div>
+    <button id="toggle-sound">Play Music</button>
+    <script>
+        const music = document.getElementById("bg-music");
+        const button = document.getElementById("toggle-sound");
+        let playing = false;
+        button.addEventListener("click", () => {
+            playing = !playing;
+            if (playing) {
+                music.play();
+                button.textContent = "Pause Music";
+            } else {
+                music.pause();
+                button.textContent = "Play Music";
+            }
+        });
+
+        function createFireflies() {
+            const firefliesContainer = document.querySelector(".fireflies");
+            for (let i = 0; i < 20; i++) {
+                const firefly = document.createElement("div");
+                firefly.classList.add("firefly");
+                firefly.style.top = Math.random() * 100 + "vh";
+                firefly.style.left = Math.random() * 100 + "vw";
+                firefliesContainer.appendChild(firefly);
+            }
+        }
+        createFireflies();
+    </script>
+</body>
+</html>
