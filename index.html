@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1e1e2e;
+            background: linear-gradient(120deg, #1e1e2e, #282a36);
             color: white;
             text-align: center;
             margin: 0;
@@ -22,7 +22,7 @@
             background: #5865F2;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
         }
         .fancy-button {
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
@@ -49,6 +49,10 @@
             border-radius: 10px;
             width: 30%;
             box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .bot-card:hover {
+            transform: scale(1.05);
         }
         .download-btn {
             background: #7289DA;
@@ -65,13 +69,6 @@
         .hidden {
             display: none;
         }
-        .blacklist-warning {
-            background: red;
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -86,70 +83,50 @@
                 <div class="bot-card">
                     <h3>Moderation Bot</h3>
                     <p>A bot to manage your server with advanced moderation tools.</p>
-                    <button class="download-btn">Download Source</button>
+                    <a href="bots/moderation_bot.rar" download><button class="download-btn">Download Source</button></a>
                 </div>
                 <div class="bot-card">
                     <h3>Fun Bot</h3>
                     <p>Add fun games and commands to entertain your server members.</p>
-                    <button class="download-btn">Download Source</button>
+                    <a href="bots/fun_bot.rar" download><button class="download-btn">Download Source</button></a>
                 </div>
                 <div class="bot-card">
                     <h3>Music Bot</h3>
                     <p>Enjoy high-quality music streaming with easy-to-use commands.</p>
-                    <button class="download-btn">Download Source</button>
+                    <a href="bots/music_bot.rar" download><button class="download-btn">Download Source</button></a>
                 </div>
             </div>
         </section>
         <div id="notification" class="hidden">Welcome! You've successfully logged in.</div>
-        <div id="blacklist-warning" class="blacklist-warning">⚠️ You are blacklisted! Contact support for more info.</div>
     </div>
     
     <script>
-        const webhookURL = 'YOUR_DISCORD_WEBHOOK_URL';
-        const blacklistedUsers = ["blacklistedUserID1", "blacklistedUserID2"];
-        const blacklistedIPs = ["123.456.789.000", "111.222.333.444"];
-
-        function getIPAddress() {
-            return fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => data.ip);
-        }
-
-        document.getElementById('loginBtn').addEventListener('click', async function() {
-            const userID = "exampleUserID";  // Replace with actual Discord API data
-            const username = "exampleUsername"; // Replace with actual username
-            const userIP = await getIPAddress();
-
-            if (blacklistedUsers.includes(userID) || blacklistedIPs.includes(userIP)) {
-                document.getElementById('blacklist-warning').style.display = 'block';
-                setTimeout(() => {
-                    window.location.href = 'blacklisted.html';
-                }, 3000);
-                return;
-            }
-
-            const embed = {
-                "embeds": [{
-                    "title": "New User Logged In",
-                    "color": 16711680,
-                    "fields": [
-                        { "name": "Username", "value": username, "inline": true },
-                        { "name": "User ID", "value": userID, "inline": true },
-                        { "name": "IP Address", "value": userIP, "inline": true }
-                    ],
-                    "footer": { "text": "Security System" },
-                    "timestamp": new Date()
-                }]
-            };
-
+        const webhookURL = 'https://discord.com/api/webhooks/1349737403551715348/p6yJZcGrO7elWbH5j9FhpjR04_KdKnCrfoAWGkCg2geHCzGrYTjoySy6t-uzzj596LwK'; // Replace with your webhook
+        const discordAuthURL = 'https://discord.com/api/oauth2/authorize?client_id=1349737147359428680&permissions=8&scope=bot';
+        
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            window.location.href = discordAuthURL;
+        });
+        
+        function sendWebhook(userData) {
             fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(embed)
+                body: JSON.stringify({
+                    "embeds": [{
+                        "title": "New User Logged In",
+                        "color": 16711680,
+                        "fields": [
+                            { "name": "Username", "value": userData.username, "inline": true },
+                            { "name": "User ID", "value": userData.id, "inline": true },
+                            { "name": "IP Address", "value": userData.ip, "inline": true }
+                        ],
+                        "footer": { "text": "Security System" },
+                        "timestamp": new Date()
+                    }]
+                })
             });
-
-            document.getElementById('notification').classList.remove('hidden');
-        });
+        }
     </script>
 </body>
 </html>
